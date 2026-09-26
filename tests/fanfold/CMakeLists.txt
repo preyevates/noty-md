@@ -16,6 +16,8 @@ if(NODE_EXECUTABLE)
         COMMAND ${NODE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_pending_edits.js)
     add_test(NAME fanfold-navigation-gate
         COMMAND ${NODE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_navigation_gate.js)
+    add_test(NAME fanfold-markdown-fidelity
+        COMMAND ${NODE_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_markdown_fidelity.js)
 endif()
 
 add_test(NAME fanfold-icon-export-security
