@@ -100,14 +100,24 @@ if ! TMPDIR="$work_dir" xvfb-run -e "$work_dir/xvfb-probe.log" -a xdpyinfo >/dev
     printf 'SKIP: installed runtime launch needs a private Xvfb display\n' >&2
     head -n 80 "$work_dir/xvfb-probe.log" >&2
 else
+    # Fan Fold is a KDBusService::Unique application: on a session bus where another
+    # instance (e.g. the developer's own) already owns the name, the staged binary would
+    # hand off and exit 0 at once. A private dbus-run-session bus and a throwaway HOME make
+    # the launch independent of whatever is running on the host session.
+    if ! command -v dbus-run-session >/dev/null 2>&1; then
+        printf 'SKIP: dbus-run-session is required for an isolated launch\n' >&2
+        exit 77
+    fi
+    mkdir -p "$xdg/home"
     set +e
     (
         cd /
+        HOME="$xdg/home" \
         XDG_CONFIG_HOME="$xdg/config" \
         XDG_CACHE_HOME="$xdg/cache" \
         XDG_DATA_HOME="$xdg/data" \
         XDG_STATE_HOME="$xdg/state" \
-        timeout --signal=TERM 8s xvfb-run -a "$prefix/bin/fanfold" \
+        timeout --signal=TERM 8s dbus-run-session -- xvfb-run -a "$prefix/bin/fanfold" \
             --root "$notes" --state "$state" >"$log" 2>&1
     )
     status=$?
