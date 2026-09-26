@@ -95,6 +95,7 @@ install(FILES
     qml/QuietButton.qml
     qml/LibraryRowAction.qml
     qml/IconPanel.qml
+    qml/RecordingPrompt.qml
     qml/LayoutContract.js
     qml/index.html
     qml/app.js
