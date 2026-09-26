@@ -5,12 +5,12 @@ import QtWebChannel
 // The card's web editor: the local index.html deck in an off-the-record, link-routing view.
 WebEngineView {
     id: web
-    property var dialog
-    property WebChannel channel
+    property var editorHost
+    property WebChannel editorChannel
     backgroundColor: "transparent"
     function resume(index) { web.forceActiveFocus(); web.runJavaScript("window.fan && fan.select("+index+")") }
     function suspend() { web.runJavaScript("window.fan && fan.suspend()") }
-    webChannel: channel
+    webChannel: editorChannel
     profile: WebEngineProfile { offTheRecord: true; httpCacheType: WebEngineProfile.MemoryHttpCache }
     settings.localContentCanAccessRemoteUrls: false
     settings.localContentCanAccessFileUrls: true
@@ -26,12 +26,12 @@ WebEngineView {
         // view — the card is an editor, not a browser — but it is not silently
         // dropped either: every scheme is routed by followLink().
         request.reject()
-        dialog.followLink(request.url.toString())
+        editorHost.followLink(request.url.toString())
     }
     // Links inside a note render with target=_blank, so they arrive HERE rather than
     // at onNavigationRequested, where a note-to-note click only logs
     // BLOCK_NEW_WINDOW. Both entry points route through the same followLink().
-    onNewWindowRequested: function(request) { dialog.followLink(request.requestedUrl.toString()) }
+    onNewWindowRequested: function(request) { editorHost.followLink(request.requestedUrl.toString()) }
     /** The toolbar's Record button calls getUserMedia({audio}), and Chromium waits on
      *  the EMBEDDER's answer — there is no page-side prompt. Microphone capture from
      *  the app's own local editor page is granted; every other permission is denied

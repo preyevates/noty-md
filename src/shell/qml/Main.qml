@@ -2590,6 +2590,6 @@ PlasmaCore.Dialog {
     }
     property Component editorFactory: Component {
         id: editorComponent
-        EditorView { id: web; dialog: dialog; channel: channel }
+        EditorView { id: web; editorHost: dialog; editorChannel: channel }
     }
 }
