@@ -96,6 +96,7 @@ install(FILES
     qml/LibraryRowAction.qml
     qml/IconPanel.qml
     qml/RecordingPrompt.qml
+    qml/EmptyState.qml
     qml/LayoutContract.js
     qml/index.html
     qml/app.js
