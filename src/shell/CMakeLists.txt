@@ -97,6 +97,7 @@ install(FILES
     qml/IconPanel.qml
     qml/RecordingPrompt.qml
     qml/EmptyState.qml
+    qml/SwatchPopup.qml
     qml/LayoutContract.js
     qml/index.html
     qml/app.js
