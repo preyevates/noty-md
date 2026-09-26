@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: preyevates <preyevates@users.noreply.github.com>
 Build-Depends:
  debhelper-compat (= 13),
+ appstream-compose,
  cmake (>= 3.22),
  g++,
  libkf6dbusaddons-dev,

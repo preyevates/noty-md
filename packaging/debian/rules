@@ -30,6 +30,37 @@ override_dh_auto_configure:
 		-DFANFOLD_BUILD_VERSION="$(DEB_VERSION)" \
 		-DFANFOLD_LOCAL_THEME_CATALOG_DIR=
 
+# Software-centre catalogue. KDE Discover (6.6, with KIconThemes 6.24) shows only a
+# placeholder for a package whose AppStream data offers nothing but a stock icon: its
+# stock-icon check compares the bare icon name against a list of full icon paths, so it
+# never matches. It does honour "cached" icons, which come from a compiled catalogue in
+# /usr/share/swcatalog, the same place Ubuntu's own archive catalogue and vendor packages
+# such as ChatGPT put theirs. appstreamcli compose builds that catalogue from the
+# metainfo, desktop entry and hicolor icons this package has just staged, so the listing
+# and its icons cannot drift from what is installed. --no-net keeps the build offline;
+# the origin names the catalogue, which AppStream otherwise leaves unset.
+SWCATALOG_ROOT := debian/fanfold
+SWCATALOG_WORK := debian/swcatalog-compose
+
+execute_after_dh_auto_install:
+	rm -rf $(SWCATALOG_WORK)
+	appstreamcli compose --no-net --origin=fanfold --prefix=/usr \
+		--data-dir=$(SWCATALOG_WORK)/xml \
+		--icons-dir=$(SWCATALOG_WORK)/icons \
+		--hints-dir=$(SWCATALOG_WORK)/hints \
+		$(SWCATALOG_ROOT)
+	test -s $(SWCATALOG_WORK)/xml/fanfold.xml.gz
+	zcat $(SWCATALOG_WORK)/xml/fanfold.xml.gz \
+		| sed '0,/<components version="\([^"]*\)">/s//<components version="\1" origin="fanfold">/' \
+		| gzip -9n > $(SWCATALOG_WORK)/fanfold.xml.gz
+	zcat $(SWCATALOG_WORK)/fanfold.xml.gz | grep -q '<components [^>]*origin="fanfold"'
+	zcat $(SWCATALOG_WORK)/fanfold.xml.gz | grep -q '<icon type="cached"'
+	install -D -m 0644 $(SWCATALOG_WORK)/fanfold.xml.gz \
+		$(SWCATALOG_ROOT)/usr/share/swcatalog/xml/fanfold.xml.gz
+	mkdir -p $(SWCATALOG_ROOT)/usr/share/swcatalog/icons/fanfold
+	cp -r $(SWCATALOG_WORK)/icons/. $(SWCATALOG_ROOT)/usr/share/swcatalog/icons/fanfold/
+	rm -rf $(SWCATALOG_WORK)
+
 # QtWebEngine and QtWebChannel are QML imports resolved at runtime, not linked
 # libraries, so dpkg-shlibdeps cannot see them; they are declared by hand in
 # debian/control alongside the other qml6-module-* imports. Everything the ELF
