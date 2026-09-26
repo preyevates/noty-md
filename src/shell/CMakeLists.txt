@@ -99,6 +99,7 @@ install(FILES
     qml/EmptyState.qml
     qml/SwatchPopup.qml
     qml/CloseConfirmWindow.qml
+    qml/EditorView.qml
     qml/LayoutContract.js
     qml/index.html
     qml/app.js
