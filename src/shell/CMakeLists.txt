@@ -98,6 +98,7 @@ install(FILES
     qml/RecordingPrompt.qml
     qml/EmptyState.qml
     qml/SwatchPopup.qml
+    qml/CloseConfirmWindow.qml
     qml/LayoutContract.js
     qml/index.html
     qml/app.js

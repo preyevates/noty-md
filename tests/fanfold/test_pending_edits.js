@@ -453,7 +453,8 @@ async function discardPromptFlushesOtherNativeNotes() {
     assert.equal(exits, 0, 'discarding selected must not lose another uncommitted note');
     assert.equal(dialog.allowDiscard, false);
     assert.match(dialog.saveStatus, /Atomic autosave staging failed/);
-    assert.match(source.slice(source.indexOf('objectName:"close-prompt-body"')),
+    const prompt = fs.readFileSync(path.join(qml, 'CloseConfirmWindow.qml'), 'utf8');
+    assert.match(prompt.slice(prompt.indexOf('objectName:"close-prompt-body"')),
                  /text:dialog\.closeSaveError\s*\?\s*dialog\.closeSaveError/,
                  'flush refusal must be visible inside the still-open modal');
     const bridgeStatus = source.match(/function status\(text,dirty,self\) \{([^\n]*)\}/);
@@ -472,7 +473,7 @@ async function discardPromptFlushesOtherNativeNotes() {
         /if\(event\.key===Qt\.Key_Space[^\n]*?\{ (dialog\.requestDiscardClose\(\)); event\.accepted=true \}/,
         /onClicked: \{ (dialog\.requestDiscardClose\(\)) \}/
     ]) {
-        const match = source.slice(source.indexOf('id: discardButton')).match(handler);
+        const match = prompt.slice(prompt.indexOf('id: discardButton')).match(handler);
         assert.ok(match, 'mouse, keyboard and accessibility discard paths must use guard');
         vm.runInContext(match[1], context);
     }
